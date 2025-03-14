@@ -3,21 +3,29 @@
 import React, { useState } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Download, Heart, AlertCircle } from 'lucide-react';
+import { Download, Heart, AlertCircle, Loader2 } from 'lucide-react';
 
-// Interface for the emoji data
 interface EmojiCardProps {
   imageUrl: string;
   prompt: string;
   likes?: number;
-  onLike?: () => void;
+  onLike?: (isLiking: boolean) => void;
   onDownload?: () => void;
+  id: string;
 }
 
-// EmojiCard component that uses our Tailwind components
-export function EmojiCard({ imageUrl, prompt, likes = 0, onLike, onDownload }: EmojiCardProps) {
+export function EmojiCard({ imageUrl, prompt, likes = 0, onLike, onDownload, id }: EmojiCardProps) {
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
+  
+  const [isLiked, setIsLiked] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const likedEmojis = JSON.parse(localStorage.getItem('likedEmojis') || '{}');
+      return !!likedEmojis[id];
+    }
+    return false;
+  });
 
   const handleImageLoad = () => {
     setIsLoading(false);
@@ -28,6 +36,30 @@ export function EmojiCard({ imageUrl, prompt, likes = 0, onLike, onDownload }: E
     setIsLoading(false);
     setImageError(true);
     console.error('Failed to load image:', imageUrl);
+  };
+
+  const handleLikeClick = () => {
+    const likedEmojis = JSON.parse(localStorage.getItem('likedEmojis') || '{}');
+    if (isLiked) {
+      delete likedEmojis[id];
+    } else {
+      likedEmojis[id] = true;
+    }
+    localStorage.setItem('likedEmojis', JSON.stringify(likedEmojis));
+    
+    setIsLiked(!isLiked);
+    onLike?.(!isLiked);
+  };
+
+  const handleDownloadClick = async () => {
+    if (!isDownloading) {
+      setIsDownloading(true);
+      try {
+        await onDownload?.();
+      } finally {
+        setIsDownloading(false);
+      }
+    }
   };
 
   return (
@@ -47,7 +79,7 @@ export function EmojiCard({ imageUrl, prompt, likes = 0, onLike, onDownload }: E
           <img
             src={imageUrl}
             alt={prompt}
-            className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 ${
+            className={`h-full w-full object-cover transition-all duration-300 group-hover:scale-110 ${
               isLoading ? 'opacity-0' : 'opacity-100'
             }`}
             onLoad={handleImageLoad}
@@ -56,32 +88,40 @@ export function EmojiCard({ imageUrl, prompt, likes = 0, onLike, onDownload }: E
         )}
       </div>
       
-      {/* Overlay with actions */}
-      <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-all duration-200 group-hover:opacity-100">
         <Button
           variant="secondary"
           size="icon"
-          onClick={onDownload}
-          className="h-10 w-10"
-          disabled={imageError}
+          onClick={handleDownloadClick}
+          className={`h-10 w-10 transition-transform duration-200 ${isDownloading ? 'scale-95' : 'hover:scale-110'}`}
+          disabled={imageError || isDownloading}
         >
-          <Download className="h-5 w-5" />
+          {isDownloading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Download className="h-5 w-5" />
+          )}
         </Button>
         <Button
           variant="secondary"
           size="icon"
-          onClick={onLike}
-          className="h-10 w-10"
+          onClick={handleLikeClick}
+          className={`h-10 w-10 transition-all duration-200 ${isLiked ? 'bg-red-500 hover:bg-red-600' : ''} ${!isLiked ? 'hover:scale-110' : ''}`}
           disabled={imageError}
         >
-          <Heart className="h-5 w-5" fill={likes > 0 ? "white" : "none"} />
+          <Heart 
+            className={`h-5 w-5 transition-colors duration-200 ${isLiked ? 'text-white' : ''}`} 
+            fill={isLiked ? "currentColor" : "none"} 
+          />
         </Button>
       </div>
 
-      {/* Footer with likes count */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-        <p className="text-sm text-white">{likes} likes</p>
+        <p className="text-sm text-white flex items-center gap-1">
+          <Heart className="h-4 w-4" fill={likes > 0 ? "currentColor" : "none"} />
+          <span className="transition-all duration-200">{likes} {likes === 1 ? 'like' : 'likes'}</span>
+        </p>
       </div>
     </Card>
   );
-} 
+}

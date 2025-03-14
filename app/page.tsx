@@ -1,19 +1,30 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EmojiGrid } from "@/components/EmojiGrid";
 import { EmojiForm } from "@/components/EmojiForm";
 
 interface Emoji {
+  id: string;
   imageUrl: string;
   prompt: string;
   likes: number;
 }
 
 export default function Home() {
-  const [emojis, setEmojis] = useState<Emoji[]>([]);
+  const [emojis, setEmojis] = useState<Emoji[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedEmojis = localStorage.getItem('emojis');
+      return savedEmojis ? JSON.parse(savedEmojis) : [];
+    }
+    return [];
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('emojis', JSON.stringify(emojis));
+  }, [emojis]);
 
   const handleGenerateEmoji = async (prompt: string) => {
     setIsLoading(true);
@@ -42,11 +53,14 @@ export default function Home() {
         throw new Error('No image URL returned from the API');
       }
 
-      setEmojis(prev => [{
+      const newEmoji: Emoji = {
+        id: crypto.randomUUID(),
         imageUrl: data.imageUrl,
         prompt,
         likes: 0
-      }, ...prev]);
+      };
+
+      setEmojis(prev => [newEmoji, ...prev]);
 
     } catch (err) {
       console.error('Error generating emoji:', err);
@@ -56,9 +70,9 @@ export default function Home() {
     }
   };
 
-  const handleLike = (index: number) => {
+  const handleLike = (index: number, isLiking: boolean) => {
     setEmojis(prev => prev.map((emoji, i) => 
-      i === index ? { ...emoji, likes: emoji.likes + 1 } : emoji
+      i === index ? { ...emoji, likes: emoji.likes + (isLiking ? 1 : -1) } : emoji
     ));
   };
 
@@ -102,7 +116,7 @@ export default function Home() {
         <EmojiGrid 
           emojis={emojis}
           onLike={handleLike}
-          onDownload={(imageUrl) => handleDownload(imageUrl)}
+          onDownload={handleDownload}
         />
       </main>
 

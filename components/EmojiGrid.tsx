@@ -3,21 +3,19 @@
 import React from 'react';
 import { EmojiCard } from './EmojiCard';
 
-// Interface for a single emoji item
 interface Emoji {
+  id: string;
   imageUrl: string;
   prompt: string;
   likes: number;
 }
 
-// Interface for the EmojiGrid props
 interface EmojiGridProps {
   emojis: Emoji[];
-  onLike: (index: number) => void;
+  onLike: (index: number, isLiking: boolean) => void;
   onDownload: (imageUrl: string) => void;
 }
 
-// EmojiGrid component that displays multiple EmojiCard components in a grid
 export function EmojiGrid({ emojis, onLike, onDownload }: EmojiGridProps) {
   if (emojis.length === 0) {
     return (
@@ -31,14 +29,15 @@ export function EmojiGrid({ emojis, onLike, onDownload }: EmojiGridProps) {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {emojis.map((emoji, index) => (
         <EmojiCard
-          key={emoji.imageUrl}
+          key={emoji.id}
+          id={emoji.id}
           imageUrl={emoji.imageUrl}
           prompt={emoji.prompt}
           likes={emoji.likes}
-          onLike={() => onLike(index)}
+          onLike={(isLiking) => onLike(index, isLiking)}
           onDownload={() => onDownload(emoji.imageUrl)}
         />
       ))}
     </div>
   );
-} 
+}

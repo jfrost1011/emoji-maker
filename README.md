@@ -1,29 +1,31 @@
-# Emoji Maker
+# 🎨 Emoji Maker
 
-A Next.js web application that generates custom emojis using AI. Built with modern web technologies and a beautiful, responsive UI.
+A modern web application that generates custom emojis using AI. Built with Next.js and powered by the Replicate API.
 
-## Features
+![Emoji Maker Demo](public/demo.png)
 
-- Generate custom emojis using AI with text prompts
-- Modern, responsive UI built with Tailwind CSS and Shadcn/ui
-- Real-time emoji generation with loading states
-- Like and download generated emojis
-- Grid layout for displaying generated emojis
+## ✨ Features
 
-## Tech Stack
+- 🎯 Generate custom emojis using AI with text prompts
+- 🎨 Modern, responsive UI built with Tailwind CSS and Shadcn/ui
+- ⚡ Real-time emoji generation with loading states
+- 💖 Like and download your favorite emojis
+- 📱 Fully responsive grid layout
 
-- Next.js 15.2
-- React
-- TypeScript
-- Tailwind CSS
-- Shadcn/ui Components
-- Replicate AI API
+## 🚀 Tech Stack
 
-## Getting Started
+- [Next.js 15.2](https://nextjs.org/) - React framework
+- [React](https://reactjs.org/) - UI library
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Shadcn/ui](https://ui.shadcn.com/) - UI components
+- [Replicate API](https://replicate.com/) - AI model integration
+
+## 🛠️ Getting Started
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/emoji-maker.git
+git clone https://github.com/jfrost1011/emoji-maker.git
 cd emoji-maker
 ```
 
@@ -44,21 +46,21 @@ npm run dev
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Environment Variables
+## 🌍 Environment Variables
 
 - `REPLICATE_API_TOKEN`: Your Replicate API token (required)
 
-## Usage
+## 📝 Usage
 
-1. Enter a descriptive prompt for your desired emoji
+1. Enter a descriptive prompt for your desired emoji (e.g., "a cute pixel art cat emoji")
 2. Click "Generate" and wait for the AI to create your emoji
 3. Like or download your generated emojis
-4. View all your generated emojis in the grid layout
+4. View all your generated emojis in the responsive grid layout
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
